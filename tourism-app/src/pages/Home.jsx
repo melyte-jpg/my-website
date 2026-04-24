@@ -3,8 +3,9 @@ import { destinations } from "../data/destinations";
 
 export default function Home() {
   return (
+   
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100">
-
+         
     
       <div className="h-[70vh] flex flex-col justify-center items-center text-center px-6">
         <h1 className="text-5xl font-bold text-gray-800">

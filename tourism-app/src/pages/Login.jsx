@@ -1,53 +1,72 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login Data:", form);
-   
+  const handleLogin = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        alert("Login successful!");
+        navigate("/destinations");
+      } else {
+        alert("Invalid login");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-[80vh]">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md p-6 bg-white shadow-md rounded-xl"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+
+      <div className="bg-white/10 p-6 rounded-lg w-80">
+
+        <h1 className="text-2xl mb-4 text-center">Login</h1>
 
         <input
-          type="email"
           name="email"
           placeholder="Email"
-          className="w-full p-2 mb-3 border rounded"
           onChange={handleChange}
+          className="w-full p-2 mb-2 text-black"
         />
 
         <input
-          type="password"
           name="password"
+          type="password"
           placeholder="Password"
-          className="w-full p-2 mb-3 border rounded"
           onChange={handleChange}
+          className="w-full p-2 mb-4 text-black"
         />
 
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
+        <button
+          onClick={handleLogin}
+          className="bg-indigo-600 w-full py-2"
+        >
           Login
         </button>
-      </form>
+
+      </div>
+
     </div>
   );
 }
