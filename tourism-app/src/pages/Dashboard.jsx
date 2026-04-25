@@ -10,32 +10,29 @@ export default function Dashboard() {
   // LOAD BOOKINGS
   // -------------------------
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     fetch(`http://localhost:5000/api/bookings/${user.id}`)
-
       .then((res) => res.json())
-      .then((data) => {
-        const userBookings = data.filter(
-          (b) => b.userId === user.id
-        );
-        setBookings(userBookings);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+      .then((data) => setBookings(data || []))
+      .catch((err) => console.log("BOOKINGS ERROR:", err));
+  }, [user?.id]);
 
   // -------------------------
   // LOAD FAVORITES
   // -------------------------
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     fetch(`http://localhost:5000/api/favorites/${user.id}`)
       .then((res) => res.json())
-      .then((data) => setFavorites(data))
-      .catch((err) => console.log(err));
-  }, []);
+      .then((data) => setFavorites(data || []))
+      .catch((err) => console.log("FAVORITES ERROR:", err));
+  }, [user?.id]);
 
+  // -------------------------
+  // IF NOT LOGGED IN
+  // -------------------------
   if (!user) {
     return (
       <div className="text-white p-10 text-center">
@@ -48,18 +45,21 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-slate-900 to-black text-white pt-20 p-6">
 
       {/* HEADER */}
-      <h1 className="text-4xl font-bold text-center mb-8">
-         Welcome, {user.name}
+      <h1 className="text-4xl font-bold text-center mb-10">
+        Welcome, {user.name}
       </h1>
 
       {/* ---------------- BOOKINGS ---------------- */}
       <h2 className="text-2xl font-semibold mb-4">
-         Your Bookings
+        Your Bookings
       </h2>
 
       <div className="grid md:grid-cols-3 gap-6 mb-10">
+
         {bookings.length === 0 ? (
-          <p className="text-gray-400">No bookings yet</p>
+          <p className="text-gray-400 col-span-full text-center">
+            No bookings yet
+          </p>
         ) : (
           bookings.map((b) => (
             <div
@@ -71,21 +71,25 @@ export default function Dashboard() {
               </h3>
 
               <p className="text-gray-300 text-sm">
-                 Date: {new Date(b.date).toLocaleDateString()}
+                Date: {new Date(b.date).toLocaleDateString()}
               </p>
             </div>
           ))
         )}
+
       </div>
 
       {/* ---------------- FAVORITES ---------------- */}
       <h2 className="text-2xl font-semibold mb-4">
-         Your Favorites
+        Your Favorites
       </h2>
 
       <div className="grid md:grid-cols-3 gap-6">
+
         {favorites.length === 0 ? (
-          <p className="text-gray-400">No favorites yet</p>
+          <p className="text-gray-400 col-span-full text-center">
+            No favorites yet
+          </p>
         ) : (
           favorites.map((f) => (
             <div
@@ -102,6 +106,7 @@ export default function Dashboard() {
             </div>
           ))
         )}
+
       </div>
 
     </div>

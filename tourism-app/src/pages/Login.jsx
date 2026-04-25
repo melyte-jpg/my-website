@@ -32,13 +32,15 @@ export default function Login() {
         return;
       }
 
-      // ✅ SAVE USER
-   localStorage.setItem("user", JSON.stringify({
-  id: data.user.id,
-  name: data.user.name,
-  email: data.user.email,
-}));
-
+      // SAVE USER
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+        })
+      );
 
       alert("Login successful!");
       navigate("/destinations");
@@ -50,39 +52,59 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-slate-900 to-black text-white px-4">
 
-      <div className="bg-white/10 p-6 rounded-lg w-80">
+      {/* LOGIN CARD */}
+      <div className="bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-xl w-full max-w-sm border border-white/20 shadow-lg">
 
-        <h1 className="text-2xl mb-4 text-center">Login</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Login to <span className="text-indigo-400">TRAZ Traveland</span>
+        </h1>
 
         {/* ERROR MESSAGE */}
-        {error && <p className="text-red-400 mb-2">{error}</p>}
+        {error && (
+          <p className="text-red-400 text-sm mb-3 text-center">
+            {error}
+          </p>
+        )}
 
+        {/* EMAIL */}
         <input
           name="email"
           placeholder="Email"
           onChange={handleChange}
-          className="w-full p-2 mb-2 text-black"
+          className="w-full p-3 mb-3 rounded bg-white text-black outline-none"
         />
 
+        {/* PASSWORD */}
         <input
           name="password"
           type="password"
           placeholder="Password"
           onChange={handleChange}
-          className="w-full p-2 mb-4 text-black"
+          className="w-full p-3 mb-4 rounded bg-white text-black outline-none"
         />
 
+        {/* BUTTON */}
         <button
           onClick={handleLogin}
-          className="bg-purple-600 w-full py-2"
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded font-semibold transition"
         >
           Login
         </button>
 
-      </div>
+        {/* FOOTER TEXT */}
+        <p className="text-center text-sm text-gray-400 mt-4">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-indigo-400 cursor-pointer"
+          >
+            Register
+          </span>
+        </p>
 
+      </div>
     </div>
   );
 }

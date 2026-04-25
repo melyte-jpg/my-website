@@ -7,29 +7,36 @@ export default function Favorites() {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
+  // -------------------------
   // LOAD FAVORITES
+  // -------------------------
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     fetch(`http://localhost:5000/api/favorites/${user.id}`)
       .then((res) => res.json())
-      .then((data) => setFavorites(data))
-      .catch((err) => console.log(err));
-  }, []);
+      .then((data) => setFavorites(data || []))
+      .catch((err) => console.log("FAVORITES ERROR:", err));
+  }, [user?.id]);
 
+  // -------------------------
   // REMOVE FAVORITE
+  // -------------------------
   const removeFavorite = async (id) => {
     try {
       await fetch(`http://localhost:5000/api/favorites/${id}`, {
         method: "DELETE",
       });
 
-      setFavorites(favorites.filter((f) => f.id !== id));
+      setFavorites((prev) => prev.filter((f) => f.id !== id));
     } catch (err) {
-      console.log(err);
+      console.log("DELETE ERROR:", err);
     }
   };
 
+  // -------------------------
+  // NOT LOGGED IN
+  // -------------------------
   if (!user) {
     return (
       <div className="text-white text-center mt-20">
@@ -53,7 +60,9 @@ export default function Favorites() {
         <div className="grid md:grid-cols-3 gap-6">
 
           {favorites.map((fav) => {
-            const dest = fav.Destination;
+            const dest = fav?.Destination;
+
+            if (!dest) return null;
 
             return (
               <div
@@ -112,6 +121,7 @@ export default function Favorites() {
 
         </div>
       )}
+
     </div>
   );
 }

@@ -1,33 +1,72 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const linkStyle = ({ isActive }) =>
+    `px-4 py-2 rounded-lg text-sm transition ${
+      isActive
+        ? "bg-blue-600 text-white"
+        : "bg-gray-800 hover:bg-blue-600"
+    }`;
+
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/95 backdrop-blur-md text-white shadow-md z-50">
 
-      <div className="flex justify-between items-center px-8 py-4">
+      <div className="flex justify-between items-center px-4 md:px-8 py-4">
 
-        <h1 className="text-2xl font-bold text-blue-400">
-          TravelGo
+        {/* LOGO */}
+        <h1
+          onClick={() => navigate("/")}
+          className="text-xl md:text-2xl font-bold text-blue-400 cursor-pointer"
+        >
+          TRAZ Traveland
         </h1>
 
-        <div className="flex gap-3 flex-wrap">
+        {/* LINKS */}
+        <div className="flex gap-2 md:gap-3 flex-wrap items-center">
 
-          {[
-            { path: "/", label: "Home" },
-            { path: "/destinations", label: "Destinations" },
-            { path: "/favorites", label: "Favorites" }, // ✅ FIXED
-            { path: "/dashboard", label: "Dashboard" },
-            { path: "/login", label: "Login" },
-            { path: "/register", label: "Register" },
-          ].map((item, i) => (
-            <NavLink
-              key={i}
-              to={item.path}
-              className="px-4 py-2 bg-gray-800 rounded-lg hover:bg-blue-600 transition text-sm"
+          <NavLink to="/" className={linkStyle}>
+            Home
+          </NavLink>
+
+          <NavLink to="/destinations" className={linkStyle}>
+            Destinations
+          </NavLink>
+
+          <NavLink to="/favorites" className={linkStyle}>
+            Favorites
+          </NavLink>
+
+          <NavLink to="/dashboard" className={linkStyle}>
+            Dashboard
+          </NavLink>
+
+          {!user ? (
+            <>
+              <NavLink to="/login" className={linkStyle}>
+                Login
+              </NavLink>
+
+              <NavLink to="/register" className={linkStyle}>
+                Register
+              </NavLink>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm transition"
             >
-              {item.label}
-            </NavLink>
-          ))}
+              Logout
+            </button>
+          )}
 
         </div>
 
