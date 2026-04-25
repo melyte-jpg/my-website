@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// Routes
+// ROUTES
 app.use("/api/destinations", require("./routes/destinationRoutes"));
 app.use("/api/users", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
@@ -24,17 +24,16 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// 🔥 START SERVER FIRST (VERY IMPORTANT FOR RENDER)
-app.listen(PORT, () => {
+// 🚀 START SERVER FIRST (IMPORTANT FOR RENDER)
+app.listen(PORT, async () => {
   console.log("Server running on PORT:", PORT);
 
-  // DB connects AFTER server starts (non-blocking style)
-  sequelize.authenticate()
-    .then(() => {
-      console.log("DB connected");
-      return sequelize.sync();
-    })
-    .catch((err) => {
-      console.log("DB Error:", err.message);
-    });
+  try {
+    await sequelize.authenticate();
+    console.log("DB connected");
+
+    await sequelize.sync(); // no alter in production
+  } catch (err) {
+    console.log("DB Error:", err.message);
+  }
 });
