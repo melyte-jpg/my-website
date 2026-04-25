@@ -8,38 +8,36 @@ require("./models");
 
 const app = express();
 
-// ✅ CORS
-app.use(cors({
-  origin: "*",
-}));
+// CORS
+app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 
-// ✅ ROUTES
+// ROUTES
 app.use("/api/destinations", require("./routes/destinationRoutes"));
 app.use("/api/users", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/favorites", require("./routes/favoriteRoutes"));
 
-// ✅ TEST ROUTE
+// TEST ROUTE
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// ✅ DB + SERVER START
-sequelize.authenticate()
-  .then(() => {
-    console.log("DB connected");
-    return sequelize.sync({ alter: true });
-  })
-  .then(() => {
-    const PORT = process.env.PORT || 5000;
+// START SERVER FIRST (IMPORTANT FIX)
+const PORT = process.env.PORT || 5000;
 
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log("DB Error:", err);
-  });
+app.listen(PORT, async () => {
+  console.log(`Server running on ${PORT}`);
+
+  // DB connects AFTER server starts
+  try {
+    await sequelize.authenticate();
+    console.log("DB connected");
+
+    await sequelize.sync(); // remove alter:true in production
+  } catch (err) {
+    console.log("DB Error:", err.message);
+  }
+});
