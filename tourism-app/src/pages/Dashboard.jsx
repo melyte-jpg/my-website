@@ -12,7 +12,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
-    fetch("http://localhost:5000/api/bookings")
+    fetch(`http://localhost:5000/api/bookings/${user.id}`)
+
       .then((res) => res.json())
       .then((data) => {
         const userBookings = data.filter(
