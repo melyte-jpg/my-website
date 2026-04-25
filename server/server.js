@@ -24,16 +24,21 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// 🚀 START SERVER FIRST (IMPORTANT FOR RENDER)
-app.listen(PORT, async () => {
-  console.log("Server running on PORT:", PORT);
-
+// DB FIRST, THEN SERVER
+async function startServer() {
   try {
     await sequelize.authenticate();
     console.log("DB connected");
 
-    await sequelize.sync(); // no alter in production
+    await sequelize.sync();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+
   } catch (err) {
-    console.log("DB Error:", err.message);
+    console.log("DB Error:", err);
   }
-});
+}
+
+startServer();
