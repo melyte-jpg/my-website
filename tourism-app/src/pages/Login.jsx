@@ -6,8 +6,10 @@ export default function Login() {
 
   const [form, setForm] = useState({
     email: "",
-    password: "",
+    password: ""
   });
+
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,24 +17,35 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
       });
 
       const data = await res.json();
 
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        alert("Login successful!");
-        navigate("/destinations");
-      } else {
-        alert("Invalid login");
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+        return;
       }
+
+      // ✅ SAVE USER
+   localStorage.setItem("user", JSON.stringify({
+  id: data.user.id,
+  name: data.user.name,
+  email: data.user.email,
+}));
+
+
+      alert("Login successful!");
+      navigate("/destinations");
+
     } catch (err) {
       console.log(err);
+      setError("Server error");
     }
   };
 
@@ -42,6 +55,9 @@ export default function Login() {
       <div className="bg-white/10 p-6 rounded-lg w-80">
 
         <h1 className="text-2xl mb-4 text-center">Login</h1>
+
+        {/* ERROR MESSAGE */}
+        {error && <p className="text-red-400 mb-2">{error}</p>}
 
         <input
           name="email"
@@ -60,7 +76,7 @@ export default function Login() {
 
         <button
           onClick={handleLogin}
-          className="bg-indigo-600 w-full py-2"
+          className="bg-purple-600 w-full py-2"
         >
           Login
         </button>

@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const db = require("../models");
 
-const { User } = require("../models");
+const User = db.User;
 
-
+console.log("AUTH ROUTES LOADED");
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -14,25 +15,27 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password,
+      role: "user",
     });
 
     res.json({
       message: "User registered successfully",
       user,
     });
+
   } catch (err) {
+    console.log("REGISTER ERROR:", err); // IMPORTANT DEBUG
     res.status(500).json({ error: err.message });
   }
 });
 
-
-// LOGIN (simple version)
+// LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({
-      where: { email, password },
+      where: { email, password }
     });
 
     if (!user) {
@@ -41,9 +44,11 @@ router.post("/login", async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user,
+      user
     });
+
   } catch (err) {
+    console.log("LOGIN ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });

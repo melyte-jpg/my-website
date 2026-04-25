@@ -1,11 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
   const Destination = sequelize.define("Destination", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
-    price: DataTypes.FLOAT,
     image: DataTypes.STRING,
-    shortDescription: DataTypes.STRING,
-    longDescription: DataTypes.TEXT,
+    price: DataTypes.STRING,
   });
 
   return Destination;

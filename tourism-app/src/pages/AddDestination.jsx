@@ -1,66 +1,83 @@
 import { useState } from "react";
 
 export default function AddDestination() {
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    price: "",
-  });
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [image, setImage] = useState("");
+  const [description, setDescription] = useState("");
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleAdd = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/destinations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          price,
+          image,
+          description,
+        }),
+      });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+      const data = await res.json();
+      console.log("Added:", data);
 
-    const res = await fetch("http://localhost:5000/api/destinations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+      alert("Destination added successfully!");
 
-    const data = await res.json();
+      // clear form
+      setName("");
+      setPrice("");
+      setImage("");
+      setDescription("");
 
-    alert("Destination added!");
-    console.log(data);
+    } catch (err) {
+      console.log(err);
+      alert("Error adding destination");
+    }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl mb-4">Add Destination</h1>
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="bg-white/10 p-6 rounded-lg w-96">
 
-      <form onSubmit={handleSubmit}>
+        <h1 className="text-xl mb-4 text-center">Add Destination</h1>
+
         <input
-          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           placeholder="Name"
-          onChange={handleChange}
-          className="border p-2 block mb-2"
+          className="w-full p-2 mb-2 text-black"
         />
 
         <input
-          name="description"
-          placeholder="Description"
-          onChange={handleChange}
-          className="border p-2 block mb-2"
-        />
-
-        <input
-          name="price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
           placeholder="Price"
-          onChange={handleChange}
-          className="border p-2 block mb-2"
+          className="w-full p-2 mb-2 text-black"
         />
 
-        <button className="bg-green-600 text-white px-4 py-2">
-          Add
+        <input
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+          placeholder="Image URL"
+          className="w-full p-2 mb-2 text-black"
+        />
+
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+          className="w-full p-2 mb-4 text-black"
+        />
+
+        <button
+          onClick={handleAdd}
+          className="bg-green-600 w-full py-2"
+        >
+          Add Destination
         </button>
-      </form>
+
+      </div>
     </div>
   );
 }

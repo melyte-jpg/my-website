@@ -1,72 +1,100 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import DestinationCard from "../components/DestinationCard";
 
 export default function Destinations() {
   const [destinations, setDestinations] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // LOAD DESTINATIONS
   useEffect(() => {
     fetch("http://localhost:5000/api/destinations")
       .then((res) => res.json())
-      .then((data) => {
-        console.log("DESTINATIONS:", data);
-        setDestinations(data);
-      })
-      .catch((err) => console.log("ERROR:", err));
+      .then((data) => setDestinations(data))
+      .catch((err) => console.log(err));
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-indigo-950 to-black text-white p-8">
+  // LOAD FAVORITES
+  useEffect(() => {
+    if (!user) return;
 
-      {/* TITLE */}
-      <h1 className="text-4xl font-extrabold text-center mb-10">
-         Explore Space Destinations
+    fetch(`http://localhost:5000/api/favorites/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => setFavorites(data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  // CHECK FAVORITE
+  const isFavorite = (destinationId) => {
+    return favorites.some(
+      (f) => f.destinationId === destinationId
+    );
+  };
+
+  // TOGGLE FAVORITE
+  const toggleFavorite = async (destinationId) => {
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+    const exists = isFavorite(destinationId);
+
+    if (exists) {
+      const fav = favorites.find(
+        (f) => f.destinationId === destinationId
+      );
+
+      await fetch(
+        `http://localhost:5000/api/favorites/${fav.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      setFavorites(
+        favorites.filter((f) => f.id !== fav.id)
+      );
+    } else {
+      const res = await fetch(
+        "http://localhost:5000/api/favorites",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            destinationId,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      setFavorites([...favorites, data]);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-slate-900 to-black text-white pt-20 p-6">
+
+      <h1 className="text-4xl font-bold text-center mb-10">
+        Space Destinations
       </h1>
 
       {/* GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-6">
 
         {destinations.map((dest) => (
-          <div
+          <DestinationCard
             key={dest.id}
-            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl overflow-hidden shadow-xl hover:scale-105 transition duration-300"
-          >
-
-            {/* IMAGE (FIXED - NO CUTTING) */}
-            <div className="w-full h-56 flex items-center justify-center bg-black">
-              <img
-                src={dest.image}
-                alt={dest.name}
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-
-            {/* CONTENT */}
-            <div className="p-5">
-
-              <h2 className="text-2xl font-bold mb-1">
-                {dest.name}
-              </h2>
-
-              <p className="text-gray-300 text-sm mb-3">
-                {dest.shortDescription}
-              </p>
-
-              <p className="text-green-400 font-semibold mb-4">
-                 Price: ${dest.price}
-              </p>
-
-              <Link
-                to={`/destination/${dest.id}`}
-                className="block text-center bg-indigo-600 hover:bg-indigo-700 transition px-4 py-2 rounded-lg font-semibold"
-              >
-                View Details
-              </Link>
-
-            </div>
-          </div>
+            item={dest}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
         ))}
 
       </div>
+
     </div>
   );
 }

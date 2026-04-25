@@ -1,22 +1,33 @@
-const fs = require("fs");
-const path = require("path");
 const Sequelize = require("sequelize");
-
 const db = require("../config/db");
 
 const UserModel = require("./User");
 const DestinationModel = require("./Destination");
+const BookingModel = require("./Booking");
+const FavoriteModel = require("./Favorite"); // ✅ ADD
 
-// Initialize models
 const User = UserModel(db, Sequelize.DataTypes);
 const Destination = DestinationModel(db, Sequelize.DataTypes);
+const Booking = BookingModel(db, Sequelize.DataTypes);
+const Favorite = FavoriteModel(db, Sequelize.DataTypes);
 
-// Store in db object
-const models = {
+// associations
+User.hasMany(Booking, { foreignKey: "userId" });
+Booking.belongsTo(User, { foreignKey: "userId" });
+
+Destination.hasMany(Booking, { foreignKey: "destinationId" });
+Booking.belongsTo(Destination, { foreignKey: "destinationId" });
+
+// ⭐ FAVORITES
+User.hasMany(Favorite, { foreignKey: "userId" });
+Favorite.belongsTo(User, { foreignKey: "userId" });
+
+Destination.hasMany(Favorite, { foreignKey: "destinationId" });
+Favorite.belongsTo(Destination, { foreignKey: "destinationId" });
+
+module.exports = {
   User,
   Destination,
-  sequelize: db,
-  Sequelize,
+  Booking,
+  Favorite, // ✅ EXPORT
 };
-
-module.exports = models;

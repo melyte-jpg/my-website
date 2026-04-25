@@ -12,17 +12,20 @@ export default function Navbar() {
 
         <div className="flex gap-3 flex-wrap">
 
-          {["/", "/destinations", "/dashboard", "/login", "/register"].map((path, i) => (
+          {[
+            { path: "/", label: "Home" },
+            { path: "/destinations", label: "Destinations" },
+            { path: "/favorites", label: "Favorites" }, // ✅ FIXED
+            { path: "/dashboard", label: "Dashboard" },
+            { path: "/login", label: "Login" },
+            { path: "/register", label: "Register" },
+          ].map((item, i) => (
             <NavLink
               key={i}
-              to={path}
+              to={item.path}
               className="px-4 py-2 bg-gray-800 rounded-lg hover:bg-blue-600 transition text-sm"
             >
-              {path === "/" && "Home"}
-              {path === "/destinations" && "Destinations"}
-              {path === "/dashboard" && "Dashboard"}
-              {path === "/login" && "Login"}
-              {path === "/register" && "Register"}
+              {item.label}
             </NavLink>
           ))}
 
