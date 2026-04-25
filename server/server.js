@@ -33,7 +33,7 @@ async function startServer() {
     await sequelize.sync();
 
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:5000`);
     });
 
   } catch (err) {
