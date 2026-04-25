@@ -51,7 +51,7 @@ export default function DestinationCard({
             className={`flex-1 py-2 rounded-lg transition ${
               isFavorite(item.id)
                 ? "bg-red-600 hover:bg-red-700"
-                : "bg-pink-600 hover:bg-pink-700"
+                : "bg-gray-600 hover:bg-gray-700"
             }`}
           >
             {isFavorite(item.id)
